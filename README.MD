@@ -1,4 +1,4 @@
-# PackageX - Assignement 2 - Kamila Zaman
+# PackageX - Assignment 2 - Kamila Zaman
 
 ## Description
 
