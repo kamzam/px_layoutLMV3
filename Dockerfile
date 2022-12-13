@@ -32,5 +32,3 @@ COPY run_app.py ./
 
 #RUN python3 train.py
 
-#COPY setup.py ./
-#RUN python setup.py
