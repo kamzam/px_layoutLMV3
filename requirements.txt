@@ -1,0 +1,9 @@
+gradio
+Pillow
+numpy
+pandas
+datasets
+scikit-learn
+tqdm
+pytesseract
+transformers
