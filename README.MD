@@ -53,7 +53,7 @@ docker load --input dl_assignment_px_kamila_zaman:latest
 Once the built image is loaded, use docker run to perform the task as follows:
 
 ```
-docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir  --env-file my-env.txt --name=kz_px_container DL_Assignment_PX_KamilaZaman:latest python run_app.py
+docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir  --env-file my-env.txt --name=kz_px_container dl_assignment_px_kamila_zaman:latest python run_app.py
 ```
 
 Here, 
@@ -131,8 +131,8 @@ docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir  --env-file my-env.txt -
 ```
 
 Here, 
--v is mounting the dataset directory to the "/img/dir" in container 
---env-file is specifying the image to use for inference. To change the image kindly change the name in my-enc=v.txt
+*-v is mounting the dataset directory to the "/img/dir" in container 
+*--env-file is specifying the image to use for inference. To change the image kindly change the name in my-enc=v.txt
 
 
 
