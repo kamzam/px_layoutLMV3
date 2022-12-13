@@ -1,4 +1,4 @@
-# PackageX - Assignment 2 - Kamila Zaman
+# PackageX - Assignement 2 - Kamila Zaman
 
 ## Description
 
@@ -21,26 +21,66 @@ https://www.kaggle.com/code/ritvik1909/layoutlmv2-document-classification/data
 ## Package Requirements 
 
 1. Python 3.8.9
-2. Tesseract
-3. Transformers
-4. Datasets
-5. Pillow
-6. Docker 
+2. Numpy
+3. Pandas
+4. Tesseract
+5. Transformers
+6. Datasets
+7. Pillow
+8. Docker 
 
 
 ## Installing Docker
+
+Pre-Requisite:
+1. Enable Virtualization Technology in your machines BIOS settings
+2. Istall WSL for backend linux for docker operation
+
+### Docker Desktop
+
 Follow instructions here: 
 https://docs.docker.com/desktop/
 
 
-## Instructions
+## Instructions for project build
+
+If building from project's provided built image kindly follow the steps below:
+
+```
+docker load --input dl_assignment_px_kamila_zaman:latest 
+```
+
+Once the built image is loaded, use docker run to perform the task as follows:
+
+```
+docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir  --env-file my-env.txt --name=kz_px_container DL_Assignment_PX_KamilaZaman:latest python run_app.py
+```
+
+Here, 
+-v is mounting the dataset directory to the "/img/dir" in container 
+--env-file is specifying the image to use for inference. To change the image kindly change the name in my-enc=v.txt
+
+**
+-env can be used to pass vale to the IMG_NAME variable for convenience and ese of the docker run statement my-env.txt is used. It is useful design wise as when we have several environemt variables it is way easier to pass values to them from a file than to type it in the command itself.
+
+
 
 
 1. Intall & Build from dockerfile
 
 
+Build and run docker image from dockerfile in source git project as follows:
+
+Run the following commands.
+
+    1. Clone Git Project
+    2. Open terminal (cmd for windows) in project root directory
+    3. Run Docker Build Command 
+    4. Image should be successfully built with required environment 
+   
+
 ```
-docker build -t DL_Assignment_PX_KamilaZaman:latest -f Dockerfile .
+docker build -t dl_assignment_px_kamila_zaman:latest -f Dockerfile .
 ```
 
 
@@ -56,65 +96,43 @@ ENV env_name $IMAGE_NAME
 
 RUN pip install joblib
 
-WORKDIR layoutlmv3
+WORKDIR usr/src/layoutlmv3
 
-VOLUME datavolume
 
 RUN apt-get update
 RUN apt-get install -y tesseract-ocr
 
 COPY requirements.txt ./
-COPY packages.txt ./
-
-RUN pip install -r requirements.txt
 
 RUN pip install torch==1.8.0+cu101 torchvision==0.9.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 
 RUN pip install -q detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/torch1.8/index.html
 
+VOLUME /images_dir
+
 
 COPY train.py ./
 COPY inference.py ./
-COPY run_app.py ./
 
 
 #RUN python3 train.py
 
-
-
-```
-
-2. Run
-
-Input Paramaters:
-1. "IMAGE_NAME" - For inference on single image, file name passed as value to this environement variable 
-2. "/image_dir" - For Batch Inference use Input image directory to run inference, pass path to mounted volume
-
+#COPY setup.py ./
+#RUN python setup.py
 
 ```
-docker run DL_Assignment_PX_KamilaZaman:latest python3 inference.py
-```
 
-1. Download Git Project
-2. Open terminal (cmd for windows) in project root directory
-3. Run Docker Build Commad 
+ 
+    5. For task completion run the docker container using docker run command
+  
 
 ```
-docker build -t DL_Assignment_PX_KamilaZaman:latest -f Dockerfile .
-```
-4. Image should successfully be built with required environment and model training completed
-5. For Inference run the docker container using docker run command
-
-```
-docker run 
-docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir --name=kz_px_container DL_Assignment_PX_KamilaZaman:latest python run_app.py
+docker run --rm -it -v %cd%/dataset:/layoutlmv3/img_dir  --env-file my-env.txt --name=kz_px_container DL_Assignment_PX_KamilaZaman:latest python run_app.py
 ```
 
-For the 
-
-Input Paramaters specification:
-1. "IMAGE_NAME" - For inference on single image, file name passed as value to this environement variable 
-
+Here, 
+-v is mounting the dataset directory to the "/img/dir" in container 
+--env-file is specifying the image to use for inference. To change the image kindly change the name in my-enc=v.txt
 
 
 

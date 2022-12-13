@@ -16,21 +16,14 @@ def inference():
 
     print("Running inference.py...")
 
-    MODEL_DIR = os.environ["MODEL_DIR"]
-    #MODEL_FILE_LDA = os.environ["MODEL_FILE_LDA"]
-    #MODEL_FILE_NN = os.environ["MODEL_FILE_NN"]
-    #MODEL_PATH_LDA = os.path.join(MODEL_DIR, MODEL_FILE_LDA)
-    #MODEL_PATH_NN = os.path.join(MODEL_DIR, MODEL_FILE_NN)
-
-    imageName = os.environ["IMAGE_NAME"] 
-    print(" imageName", imageName)
-
+    
     # Load, read and normalize training data
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = LayoutLMv3ForSequenceClassification.from_pretrained("saved_model")
     model.to(device);
 
-    query = 'document-classification-dataset/email/doc_000042.png'
+    query = os.environ["IMAGE_NAME"] 
+    print(" imageName: ", query)
     image = Image.open(query).convert("RGB")
     encoded_inputs = processor(image, return_tensors="pt").to(device)
     outputs = model(**encoded_inputs)
@@ -40,7 +33,7 @@ def inference():
     print(image)
 
 
-    print("Completing train.py...")
+    print("Completing inference.py...")
  
 if __name__ == "__main__":
     inference()

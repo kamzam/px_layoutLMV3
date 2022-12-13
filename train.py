@@ -28,24 +28,28 @@ def train():
 
     print("Running train.py...")
 
-    # Load directory paths for persisting model
+    # PRE - PROCESSING
 
-    MODEL_DIR = os.environ["MODEL_DIR"]
-    #MODEL_PATH_LDA = os.path.join(MODEL_DIR, MODEL_FILE_LDA)
-    #MODEL_PATH_NN = os.path.join(MODEL_DIR, MODEL_FILE_NN)
+    #Assign label to each folder in provided dataset
+    # 3 classes 
+    # email -> 0
+    # resume -> 1
+    # scientific publication -> 2
 
 
-    #assign label to each folder in provided dataset
-    # 3 classes email -> 0, resume -> 1, scientific publication -> 2
-    cwdir =  os.getcwd()
-    print(cwdir)
-    dataset_path = cwdir + "\document-classification-dataset"
+
+
+    #cwdir =  os.getcwd()
+    #print(cwdir)
+    #dataset_path = cwdir + "\document-classification-dataset"
+
+
+    #Use Mount for Trainig Dataset
+    dataset_path = "/img_dir"
     labels = [label for label in os.listdir(dataset_path)]
     idx2label = {v: k for v, k in enumerate(labels)}
     label2idx = {k: v for v, k in enumerate(labels)}
     label2idx       
-
-
     
     images = []
     labels = []
@@ -65,11 +69,6 @@ def train():
     print(f"{len(train_data)} training examples, {len(valid_data)} validation examples")
     data.head()
    
-
-    print("Shape of the training data")
-    print(train_data.shape)
-    print(valid_data.shape)
-
     # select GPU if available -performance efiiciency
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -113,14 +112,68 @@ def train():
 
     train_dataloader = training_dataloader_from_df(train_data)
     valid_dataloader = training_dataloader_from_df(valid_data)
+
+    #print(train_dataloader)
+    #print(valid_dataloader) 
+    # Marked Check
+
+    
+    #Build the Model - Hugging Face Distribution 
+    model = LayoutLMv3ForSequenceClassification.from_pretrained(
+    "microsoft/layoutlmv3-base",  num_labels=len(label2idx)
+    )
+    model.to(device);   
     
     # Models training
+    optimizer = AdamW(model.parameters(), lr=5e-5)
+    num_epochs = 3 #small dataset
+
+
+    for epoch in range(num_epochs):
+        print("Epoch:", epoch)
+        training_loss = 0.0
+        training_correct = 0
+        #put the model in training mode
+        model.train()
+        for batch in tqdm(train_dataloader):
+            outputs = model(**batch)
+            loss = outputs.loss
+
+            training_loss += loss.item()
+            predictions = outputs.logits.argmax(-1)
+            training_correct += (predictions == batch['labels']).float().sum()
+
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+
+        print("Training Loss:", training_loss / batch["input_ids"].shape[0])
+        training_accuracy = 100 * training_correct / len(train_data)
+        print("Training accuracy:", training_accuracy.item())  
+            
+        validation_loss = 0.0
+        validation_correct = 0
+
+        # Testing the model on Validation Dataset (15) images
+        #Accuracy  = True Negative + True Positves / (TN + TP+ FN+ FP)
+        # Here,  validation_correct == True Negative + True Positves 
+        for batch in tqdm(valid_dataloader):
+            outputs = model(**batch)
+            loss = outputs.loss
+
+            validation_loss += loss.item()
+            predictions = outputs.logits.argmax(-1)
+            validation_correct += (predictions == batch['labels']).float().sum()
+
+        print("Validation Loss:", validation_loss / batch["input_ids"].shape[0])
+        validation_accuracy = 100 * validation_correct / len(valid_data)
+        print("Validation accuracy:", validation_accuracy.item())  
 
     # Save model
+    model.save_pretrained('saved_model/')
 
     # Record model
-    print(train_dataloader)
-    print(valid_dataloader)
+   
     print("Completed train.py...")
 
 

@@ -1,0 +1,1 @@
+IMG_NAME='img_dir/email/doc_000040.png'
